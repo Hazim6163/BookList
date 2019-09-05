@@ -170,7 +170,7 @@ public class QueryUtils {
 
                     for (int j = 0; j < authorsArray.length(); j++) {
 
-                        if (authorsArray.length() == 1 && j == 0) {
+                        if (j == 0) {
                             author = "Author: " + authorsArray.optString(j);
                         } else {
                             author = author.concat(" & " + authorsArray.optString(j));
