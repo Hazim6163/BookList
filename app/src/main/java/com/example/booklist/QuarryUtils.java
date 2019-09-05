@@ -1,6 +1,11 @@
 package com.example.booklist;
 
+import android.text.TextUtils;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuarryUtils {
@@ -61,7 +67,7 @@ public class QuarryUtils {
 
     /**
      * get the json response from the given url
-     * @param url
+     * @param url given url
      * @return json response
      * @throws IOException when problem from fetching the json happens
      */
@@ -121,7 +127,83 @@ public class QuarryUtils {
     }
 
     private static List<Book> extractBooksFromJson(String jsonResponse) {
-        return null;
+        // If the JSON string is empty or null, then return early.
+        if (TextUtils.isEmpty(jsonResponse)) {
+            return null;
+        }
+
+        // Create an empty ArrayList that we can start adding Books to
+        List<Book> Books = new ArrayList<>();
+
+        // Try to parse the JSON response string. If there's a problem with the way the JSON
+        // is formatted, a JSONException exception object will be thrown.
+        // Catch the exception so the app doesn't crash, and print the error message to the logs.
+        try {
+
+            // Create a JSONObject from the JSON response string
+            JSONObject baseJsonResponse = new JSONObject(jsonResponse);
+
+            // Extract the JSONArray associated with the key called "items",
+            // which represents a list of books .
+            JSONArray bookArray = baseJsonResponse.getJSONArray("items");
+
+            // For each book in the bookArray, create an {@link book} object
+            for (int i = 0; i < bookArray.length(); i++) {
+
+                // Get a single book at position i within the list of books
+                JSONObject currentBook = bookArray.getJSONObject(i);
+
+                // For a given book, extract the JSONObject associated with the
+                // key called "volumeInfo", which represents a list of all properties
+                // for that book.
+                JSONObject volumeInfo = currentBook.getJSONObject("volumeInfo");
+
+
+                // Extract the value for the key called "title"
+                String title = volumeInfo.getString("title");
+
+                JSONArray authorsArray;
+                String author = "Author: unknown";
+                if(volumeInfo.has("authors")) {
+                    // get the Authors Array
+                    authorsArray = volumeInfo.getJSONArray("authors");
+
+                    for (int j = 0; j < authorsArray.length(); j++) {
+
+                        if (authorsArray.length() == 1 && j == 0) {
+                            author = "Author: " + authorsArray.optString(j);
+                        } else {
+                            author = author.concat(" & " + authorsArray.optString(j));
+                        }
+                    }
+                }
+
+
+                String publishedDate = "Date: unavailable";
+                if(volumeInfo.has("publishedDate"))
+                    // Extract the value for the key called "publishedDate"
+                    publishedDate = "Date: "+volumeInfo.getString("publishedDate");
+
+                // Extract the value for the key called "previewLink"
+                String previewUrl = volumeInfo.getString("previewLink");
+
+                // Create a new {@link Book} object with the title, author, date,
+                // and url from the JSON response.
+                Book book = new Book(title, author, publishedDate, previewUrl);
+
+                // Add the new {@link Book} to the list of Books.
+                Books.add(book);
+            }
+
+        } catch (JSONException e) {
+            // If an error is thrown when executing any of the above statements in the "try" block,
+            // catch the exception here, so the app doesn't crash. Print a log message
+            // with the message from the exception.
+            Log.e("QueryUtils", "Problem parsing the Book JSON results", e);
+        }
+
+        // Return the list of Books
+        return Books;
     }
 
 }
