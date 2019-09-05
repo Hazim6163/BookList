@@ -14,8 +14,8 @@ import androidx.annotation.Nullable;
 
 public class BookAdapter extends ArrayAdapter<Book> {
 
-    public BookAdapter(@NonNull Context context, int resource, @NonNull List<Book> books) {
-        super(context, resource, books);
+    public BookAdapter(@NonNull Context context, @NonNull List<Book> books) {
+        super(context, 0, books);
     }
 
     @NonNull
