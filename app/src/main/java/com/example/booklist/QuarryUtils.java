@@ -3,6 +3,7 @@ package com.example.booklist;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -37,8 +38,20 @@ public class QuarryUtils {
         return Books;
     }
 
+    /**
+     * convert the request url string to url obj
+     * @param requestUrl url string
+     * @return url obj
+     */
     private static URL createUrl(String requestUrl) {
-        return null;
+        URL url = null;
+        try {
+            url = new URL(requestUrl);
+        }catch (MalformedURLException e){
+            Log.e(TAG, "createUrl: cannot create the url from the requestUrl String");
+        }
+
+        return url;
     }
 
     private static String makeHttpRequest(URL url) {
