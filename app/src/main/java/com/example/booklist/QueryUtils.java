@@ -18,11 +18,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuarryUtils {
+public class QueryUtils {
 
-    private static final String TAG = QuarryUtils.class.getSimpleName();
+    private static final String TAG = QueryUtils.class.getSimpleName();
 
-    private QuarryUtils(){}
+    private QueryUtils(){}
 
     /**
      * in this class we will :
